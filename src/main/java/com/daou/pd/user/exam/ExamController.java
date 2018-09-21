@@ -109,18 +109,11 @@ public class ExamController {
 			List<OptionVO> olist = examService.getOption(item.getItem_no());
 //			List<OptionVO> olist2 = new ArrayList<OptionVO>();
 			if (olist.size() > 1) {
-				/*for (OptionVO op : olist) {//정답 주입
-					if (op.getCorrect_yn().equals("Y")) {
-						olist2.add(op);
-						break;
-					}
-				}
-				for (OptionVO op : olist) {//오답 주입
-					if (op.getCorrect_yn().equals("N"))
-						if (olist2.size() < 4) {
-							olist2.add(op);
-						}
-				}*/
+				/*
+				 * for (OptionVO op : olist) {//정답 주입 if (op.getCorrect_yn().equals("Y")) {
+				 * olist2.add(op); break; } } for (OptionVO op : olist) {//오답 주입 if
+				 * (op.getCorrect_yn().equals("N")) if (olist2.size() < 4) { olist2.add(op); } }
+				 */
 				Collections.shuffle(olist);
 				item.setOvo(olist);
 			} else {
@@ -154,10 +147,10 @@ public class ExamController {
 		examService.makeTest(dlist);
 	}
 
-	@RequestMapping(value = "/user/exam/regist.daou", produces = "application/text; charset=utf8")//답안 제출
+	@RequestMapping(value = "/user/exam/regist.daou", produces = "application/text; charset=utf8") // 답안 제출
 	@ResponseBody
-	public String regist(HttpServletRequest req, @RequestBody List<MarkVO> list,
-			@RequestParam("type") String type, @RequestParam("leftTime") String leftTime) {
+	public String regist(HttpServletRequest req, @RequestBody List<MarkVO> list, @RequestParam("type") String type,
+			@RequestParam("leftTime") String leftTime) {
 		String id = getSessionId(req);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		map.put("alist", list);
@@ -170,24 +163,23 @@ public class ExamController {
 		int exam_no = list.get(0).getExam_no();
 		map.put("exam_no", exam_no);
 
-		if ("2".equals(type)) {//임시저장
+		if ("2".equals(type)) {// 임시저장
 			map.put("exam_status", "status02");
 			map.put("exam_left_time", leftTime);
 			examService.changeStatus(map);
 			msg = "임시주정 성공";
-		} else if ("1".equals(type)) {//최종제출
+		} else if ("1".equals(type)) {// 최종제출
 			map.put("exam_status", "status03");
 			grading(exam_no);
 			map.put("exam_left_time", 0);
 			examService.changeStatus(map);
 			msg = "제출 성공";
 		}
-		
-		
+
 		return msg;
 	}
 
-	private void grading(int exam_no) {//채점
+	private void grading(int exam_no) {// 채점
 		List<MarkVO> list = examService.getAnswerSheet(exam_no);
 		for (MarkVO m : list) {
 			if (!m.getItem_type().equals("3")) {
@@ -220,17 +212,23 @@ public class ExamController {
 	public ModelAndView WrongAnswerNote(@RequestParam("examNo") String examNo) {
 		ModelAndView mav = new ModelAndView("user/exam/wrongAnswerNote");
 		List<MarkVO> mlist = examService.getAnswerSheet(Integer.parseInt(examNo));
-		for (MarkVO mark : mlist) {
-			if ("2".equals(mark.getItem_type())) {
-				List<String> strlist = examService.getMark(mark);
-				if (strlist.size() > 1) {
-					mark.setExam_detail_answer(strlist.get(0));
-					mark.setExam_detail_correct(strlist.get(1));
-				} else {
-					if (mark.getExam_detail_answer() != null)
-						mark.setExam_detail_answer(strlist.get(0));
-					mark.setExam_detail_correct(strlist.get(0));
-				}
+//		for (MarkVO mark : mlist) {
+//			if ("2".equals(mark.getItem_type())) {
+//				List<String> strlist = examService.getMark(mlist);
+//				if (strlist.size() > 1) {
+//					mark.setExam_detail_answer(strlist.get(0));
+//					mark.setExam_detail_correct(strlist.get(1));
+//				} else {
+//					mark.setExam_detail_correct(strlist.get(0));
+//				}
+//			}
+//		}
+		
+		List<MarkVO> olist = examService.getMark(mlist);
+		
+		for (MarkVO m : mlist) {
+			if("2".equals(m.getItem_type())) {
+				
 			}
 		}
 		List<ItemVO> ilist = examService.getTestNote(Integer.parseInt(examNo));

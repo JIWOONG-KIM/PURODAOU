@@ -1,200 +1,153 @@
-drop table exam_info;
-drop table exam_list;
-drop table option_info;
-drop table problem_info;
-drop table category_info;
-drop table employee;
+#--------------공통--------------
 
+drop table quiz_exam_detail;
+drop table quiz_user_exam;
+drop table quiz_exam;
+
+drop table quiz_item_option;
+drop table quiz_item;
+drop table quiz_category;
+
+drop table employee;
+drop table quiz_config;
+
+
+#<config table>
+
+create table quiz_config (
+	quiz_cfg_code varchar(15) primary key,
+	quiz_cfg_code_name varchar(50) not null unique,
+	quiz_cfg_code_group varchar(50) not null
+);
+
+insert into quiz_config values('empD111','웹서비스개발팀','dept');
+insert into quiz_config values('empD112','시스템코어개발팀','dept');
+insert into quiz_config values('empD113','시스템보안팀','dept');
+
+insert into quiz_config values('empD121','서비스기획팀','dept');
+insert into quiz_config values('empD122','서비스운영팀','dept');
+
+insert into quiz_config values('empD211','cloud플랫폼팀','dept');
+insert into quiz_config values('empD311','SaaS운영팀','dept');
+
+
+insert into quiz_config values('empG01','사장','grade');
+insert into quiz_config values('empG02','전무','grade');
+insert into quiz_config values('empG03','상무','grade');
+insert into quiz_config values('empG04','부장','grade');
+insert into quiz_config values('empG05','차장','grade');
+insert into quiz_config values('empG06','과장','grade');
+insert into quiz_config values('empG07','대리','grade');
+insert into quiz_config values('empG08','사원','grade');
+insert into quiz_config values('empG09','인턴사원','grade');
+
+insert into quiz_config values('status01','미응시','status');
+insert into quiz_config values('status02','임시저장','status');
+insert into quiz_config values('status03','채점중','status');
+insert into quiz_config values('status04','채점완료(합격)','status');
+insert into quiz_config values('status05','채점완료(불합격)','status');
+
+# - 직원 부서: empD*** -> 부문/부/팀
+# - 직원 직급: empG0*
+
+
+select * from quiz_category;
+
+#--------------채현--------------
 
 create table employee(
-e_id varchar(100) primary key,
-e_name varchar(30),
-e_dep varchar(100),
-e_pw varchar(100),
-e_tel varchar(20),
-e_type int);
-insert into employee values('admin','admin','admin','admin','admin',2);
-insert into employee values('90100','김지웅','서비스개발 본부','daou90100','010-1234-5678',2);
-insert into employee values('90200','김수호','서비스개발 본부','daou90200','010-1950-5378',2);
-insert into employee values('90300','남채현','서비스개발 본부','daou90300','010-1454-2525',2);
-insert into employee values('90400','김다우','서비스개발 본부','daou90400','010-1284-5488',1);
-
-create table category_info(
-category_seq int primary key AUTO_INCREMENT,
-category_name varchar(100),
-delete_yn varchar(10) DEFAULT 'N',
-reg_id varchar(100),
-reg_date date,
-upt_id varchar(100),
-upt_date date,
-foreign key (reg_id) references employee(e_id),
-foreign key (upt_id) references employee(e_id)
+	emp_id varchar(10) primary key,
+	emp_name varchar(20) not null,
+	emp_dept varchar(15) not null,
+	emp_pw varchar(100) not null,
+	emp_tel varchar(15) not null,
+	emp_type char(1) not null,
+    emp_grade varchar(15) not null,
+    use_yn char(1) default 'Y',
+    foreign key (emp_dept) references quiz_config(quiz_cfg_code),
+    foreign key (emp_grade) references quiz_config(quiz_cfg_code)
 );
 
-insert into category_info (category_name, reg_id, reg_date)
-values('시스템보안', 'admin', now());
-insert into category_info (category_name, reg_id, reg_date)
-values('네트워크보안', 'admin', now());
-insert into category_info (category_name, reg_id, reg_date)
-values('웹보안', 'admin', now());
+insert into employee(emp_id, emp_name, emp_dept, emp_pw, emp_tel, emp_type, emp_grade)
+values ('admin', 'admin','empD111', 'admin', '010-1234-5678', '1', 'empG09');
 
-select * from category_info;
+#--------------수호--------------
 
-create table problem_info(
-problem_seq int primary key auto_increment,
-problem text,
-type varchar(100),
-reg_id varchar(100),
-reg_date datetime,
-upt_id varchar(100),
-upt_date datetime,
-delete_yn varchar(10) DEFAULT 'N',
-category_seq int,
-foreign key (reg_id) references employee(e_id),
-foreign key (upt_id) references employee(e_id),
-foreign key (category_seq) references category_info(category_seq)
+create table quiz_category(
+	category_no int primary key AUTO_INCREMENT,
+	category_name varchar(50),
+	use_yn char(1) DEFAULT 'Y'
 );
 
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("형사처벌은 법원관할이며 징역과 벌금 두 종류가 있다.", "1" , "admin" , now() , null, null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("형사처벌은 법원관할이며 징역과 벌금 두 종류가 있다.", "1" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("행정벌칙은 행정기관관할이며 망법에서는 과태료와 과징금을 들고 있지 않다.", "1" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("개인정보관리책임자는 개인정보보호업무를 총괄하거나 최종결정한다.", "1" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("개인정보취급자가 아니면 개인정보를 수집보관처리이용제공관리 파기할 수 없다.", "1" , "admin",now() , null,null,"N");
-
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("다음 중 대칭키 암호 알고리즘이 아닌 것은?", "2" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("다음중 바이오정보를 이용한 인증방법이 아닌 것은?", "2" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("개인정보책임자를 지칭하는 용어는?", "2" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("개인정보를 저장하고 있는 정보저장 매체의 파기 방법으로 틀린 것은?", "2" , "admin",now() , null,null,"N");
-insert into problem_info (problem, type, reg_id, reg_date, upt_id, upt_date, delete_yn)
-values ("정보통신망법과 시행령, 고시 등의 재개정 취지에 대해 가장 옳은 것은?", "2" , "admin",now() , null,null,"N");
-
-
-create table option_info(
-option_seq int primary key auto_increment,
-problem_seq int,
-option_contents varchar(500),
-answer_yn varchar(100),
-reg_id varchar(100),
-reg_date date,
-upt_id varchar(100),
-upt_date date,
-foreign key (problem_seq) references problem_info(problem_seq),
-foreign key (reg_id) references employee(e_id)
+create table quiz_item(
+	item_no int primary key auto_increment,
+	item_title varchar(300),
+    item_contents TEXT,
+	item_type char(3),
+	reg_id varchar(10),
+	reg_date datetime,
+	upt_id varchar(10),
+	upt_date datetime,
+	use_yn char(1) DEFAULT 'N',
+	category_no int,
+	foreign key (reg_id) references employee(emp_id),
+	foreign key (upt_id) references employee(emp_id),
+	foreign key (category_no) references quiz_category(category_no)
 );
 
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (1, "O" , "Y","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (1, "X" , "N","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (2, "O" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (2, "X" , "Y","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (3, "O" , "Y","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (3, "X" , "N","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (4, "O" , "Y","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (4, "X" , "N","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (5, "O" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (5, "X" , "Y","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (6, "SHA" , "Y","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (6, "AES" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (6, "SEED" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (6, "MISTY" , "N","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (7, "지문" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (7, "홍채" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (7, "얼굴" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (7, "키보드타이핑 패턴" , "Y","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (8, "CIO" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (8, "CPO" , "Y","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (8, "CSO" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (8, "CTO" , "N","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (9, "CD/DVD를 파쇠기로 잘게 조작냈다" , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (9, "하드디스크를 완전포캣으로 3회 수행한 후 버렸다." , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (9, "자기테이프를 소각장에서 태웠다." , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (9, "반도체메모리를 소자장비를 이용하여 자료를 삭제했다." , "Y","admin", now() , null,null);
-
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (10, "개인정보를 이용하는 기업 입장에서, 정보 유출시 입게되는 손실을 막기 위한 것이다." , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (10, "정보보호 여력이 있이 일정규모 이상의 기업에게만 강제력이 있다." , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (10, "과태료, 벌금등을 규정하고있으며, 징역형은 규정하지 않았다." , "N","admin", now() , null,null);
-insert into option_info (problem_seq, option_contents, answer_yn, reg_id, reg_date, upt_id, upt_date)
-values (10, "개인정보 이용자의 유출사고로 인한 사회문제를 해결하기 위한 것이다." , "Y","admin", now() , null,null);
-
-
-create table exam_list(
-exam_test_no int primary key auto_increment,
-s_date date,
-e_date date,
-ox_num int,
-obj_num int
+create table quiz_item_option(
+	option_no int primary key auto_increment,
+	item_no int not null,
+	option_contents varchar(500) not null,
+	correct_yn char(1) not null,
+	foreign key (item_no) references quiz_item(item_no)
 );
 
-insert into exam_list(s_date, e_date, ox_num, obj_num) values (date_add(now(), interval -5 day), date_add(now(), interval -1 day), 5 ,5);
-insert into exam_list(s_date, e_date, ox_num, obj_num) values (date_add(now(), interval -3 day), date_add(now(), interval +7 day) ,5 ,5);
-insert into exam_list(s_date, e_date, ox_num, obj_num) values (date_add(now(), interval -1 day), date_add(now(), interval +9 day) ,5 ,5);
+#--------------지웅--------------
 
-
-create table exam_info(
-exam_seq int primary key auto_increment,
-exam_test_no int,
-problem_seq int,
-reg_id varchar(100),
-option1 int,
-option2 int,
-option3 int,
-option4 int,
-e_answer varchar(10),
-correct varchar(10),
-reg_date datetime,
-foreign key (problem_seq) references problem_info(problem_seq),
-foreign key (exam_test_no) references exam_list(exam_test_no),
-foreign key (reg_id) references employee(e_id)
+create table quiz_exam(
+	exam_degree int primary key AUTO_INCREMENT,
+    exam_category int,
+	exam_start_date date not null,
+	exam_end_date date not null,
+	exam_ox_num int not null,
+	exam_obj_num int not null,
+    exam_short_num int not null,
+    exam_pass_score int not null,
+    foreign key (exam_category) references quiz_category(category_no)
+    
 );
 
+create table quiz_user_exam(
+	exam_no int primary key auto_increment,
+	exam_degree int not null,
+	exam_take_id varchar(10) not null,
+    exam_take_date datetime,
+	exam_retake_degree int not null default 0,
+	exam_left_time int not null default 360,
+    exam_score int,
+    exam_status varchar(15) not null default 'status01',
+    exam_final_yn char(1) default 'Y',
+	foreign key (exam_degree) references quiz_exam(exam_degree),
+	foreign key (exam_take_id) references employee(emp_id),
+	foreign key (exam_status) references quiz_config(quiz_cfg_code)
+);
+
+
+create table quiz_exam_detail(
+	exam_detail_no int primary key AUTO_INCREMENT,
+	exam_no int not null,
+	item_no int not null,
+	exam_detail_option1 int,
+	exam_detail_option2 int,
+	exam_detail_option3 int,
+	exam_detail_option4 int,
+	exam_detail_answer varchar(100),
+	exam_detail_correct varchar(100),
+	correct_yn char(1),
+	exam_detail_comment varchar(300),
+	foreign key (exam_no) references quiz_user_exam(exam_no),
+	foreign key (item_no) references quiz_item(item_no)
+);
+        
 commit;
-select distinct correct from exam_info where reg_id = '90100' and exam_test_no = 1;
-
-select * from exam_info;
-
-update exam_info set e_answer = 'X' where reg_id = '90100' and exam_test_no=1 and problem_seq=1;

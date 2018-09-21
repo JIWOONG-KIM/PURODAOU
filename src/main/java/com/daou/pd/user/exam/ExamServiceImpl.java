@@ -124,8 +124,8 @@ public class ExamServiceImpl implements ExamService {
 	}
 
 	@Override
-	public List<String> getMark(MarkVO mark) {
-		return examMapper().getMark(mark);
+	public List<MarkVO> getMark(List<MarkVO> mlist) {
+		return examMapper().getMark(mlist);
 	}
 
 }

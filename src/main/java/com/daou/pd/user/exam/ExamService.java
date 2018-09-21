@@ -40,6 +40,6 @@ public interface ExamService {
 
 	List<ItemVO> getTestNote(int exam_no);
 
-	List<String> getMark(MarkVO mark);
+	List<MarkVO> getMark(List<MarkVO> mlist);
 
 }

@@ -433,15 +433,18 @@
 
 
 	<select id="getMark" resultType="String" parameterType="markVO">
-
+		<if test="exam_detail_answer!=null">
 		SELECT
 		option_contents
-
 		FROM quiz_item_option
-
-		WHERE option_no in
-		(#{exam_detail_answer},#{exam_detail_correct})
-
+		WHERE option_no =
+		#{exam_detail_answer}
+		UNION
+		</if>
+		SELECT option_contents
+		FROM quiz_item_option
+		WHERE option_no = 
+		#{exam_detail_correct}
 	</select>
 
 </mapper>	 
