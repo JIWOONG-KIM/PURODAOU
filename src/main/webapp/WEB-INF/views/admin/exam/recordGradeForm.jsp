@@ -130,16 +130,30 @@
 			 var this_value = $(this).val();
 
 			 $("input[name='correct_yn'][index='"+this_index+"']").val(this_value);
-
+			 
 		}); 
 		
 			
 		function goUpdt(){
 			
+			//var item_list='';
+			
 			if($(':radio[id="correct_yn"]:checked').length != ($(':radio[id="correct_yn"]').length/2)){
 				alert('정답여부를 선택해주세요.');
 				return;
 			}
+			/*
+			
+			for(var i =0; i<$("input[name='correct_yn']").length; i++ ){
+				alert($("input[name='correct_yn']")[i].attr("index")); //리스트에 넣기
+			}
+			
+			$("input[name='correct_yn']").each(function(){
+				item_list += $(this).attr("index");
+			});
+			
+			alert(item_list);
+			*/
 			
 			
 			var queryString = $("form[name=recordGradeForm]").serialize();

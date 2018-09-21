@@ -179,7 +179,7 @@ public class AdminExamController {
 				String exam_take_id = request.getParameter("exam_take_id");
 				String exam_retake_degree = request.getParameter("exam_retake_degree");
 
-				 ExamDetailVO euvo = new ExamDetailVO();
+				ExamDetailVO euvo = new ExamDetailVO();
 			 
 			 // 주관식 정답여부를 가져와서 exam_detail테이블에서 correct_yn을 update!
 				 for(int i =0; i < arr_item_index.length; i++) {
